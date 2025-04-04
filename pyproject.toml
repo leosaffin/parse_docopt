@@ -1,0 +1,14 @@
+[project]
+name = "parse_docopt"
+version = "0.1.0"
+authors = [
+  { name="Leo Saffin", email="l.saffin@reading.ac.uk" },
+]
+description = "A wrapper for docopt to automatically pass arguments as named variables"
+dependencies = [
+    "docopt-ng"
+]
+
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
