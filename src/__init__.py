@@ -1,24 +1,47 @@
 from ast import literal_eval
+from typing import Any
 import re
 
 import docopt
 
 
-def parse_docopt_arguments(function, __doc__):
+def parse_docopt(
+    docstring: str,
+    argv: list[str] | str | None = None,
+    default_help: bool = True,
+    version: Any = None,
+    options_first: bool = False,
+) -> dict:
     """
+    Parameters
+    ----------
+    docstring : str
+        Description of your command-line interface.
+    argv : list of str or str, optional
+        Argument vector to be parsed. sys.argv[1:] is used if not provided.
+        If str is passed, the string is split on whitespace.
+    default_help : bool (default: True)
+        Set to False to disable automatic help on -h or --help options.
+    version : any object
+        If passed, the object will be printed if --version is in `argv`.
+    options_first : bool (default: False)
+        Set to True to require options precede positional arguments,
+        i.e. to forbid options and positional arguments intermix.
 
-    Args:
-        function:
-        __doc__: The docstring of the function being parsed
-
-    Returns:
-
+    Returns
+    -------
+    dict
+        A dictionary, where keys are names of command-line elements with special
+        characters removed such as e.g. "--verbose" -> "verbose" and "<path>" -> "path"
+        and values are the parsed values of those elements parsed as python types where
+        possible
     """
     # Load in the arguments
-    arguments = docopt.docopt(__doc__)
+    arguments = docopt.docopt(docstring, argv, default_help, version, options_first)
 
     # Remove the help argument
-    del arguments["--help"]
+    if default_help:
+        del arguments["--help"]
 
     # Parse the remaining arguments
     parsed_arguments = {}
@@ -47,7 +70,5 @@ def parse_docopt_arguments(function, __doc__):
             except (ValueError, SyntaxError):
                 parsed_arguments[newarg] = arguments[arg]
 
-    print(parsed_arguments)
-
     # Call the function and return
-    return function(**parsed_arguments)
+    return parsed_arguments
